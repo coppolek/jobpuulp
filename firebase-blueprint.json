@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "SavedJob": {
+      "title": "SavedJob",
+      "description": "A job saved by a user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "jobId": { "type": "string" },
+        "title": { "type": "string" },
+        "company": { "type": "string" },
+        "locations": { "type": "string" },
+        "url": { "type": "string" },
+        "site": { "type": "string" },
+        "description": { "type": "string" },
+        "savedAt": { "type": "string" }
+      },
+      "required": ["userId", "jobId", "title", "company", "locations", "url", "site", "description", "savedAt"]
+    },
+    "UserCV": {
+      "title": "UserCV",
+      "description": "User's curriculum vitae",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "summary": { "type": "string" },
+        "experience": { "type": "string" },
+        "education": { "type": "string" },
+        "skills": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId"]
+    },
+    "Banner": {
+      "title": "Banner",
+      "description": "Banners for the site",
+      "type": "object",
+      "properties": {
+        "imageUrl": { "type": "string" },
+        "linkUrl": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["imageUrl", "isActive"]
+    }
+  },
+  "firestore": {
+    "/savedJobs/{jobId}": {
+      "schema": "SavedJob",
+      "description": "User saved jobs"
+    },
+    "/cvs/{userId}": {
+      "schema": "UserCV",
+      "description": "User CVs"
+    },
+    "/banners/{bannerId}": {
+      "schema": "Banner",
+      "description": "Site banners"
+    }
+  }
+}
