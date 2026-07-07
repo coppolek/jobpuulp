@@ -222,6 +222,26 @@ export function Home() {
         </div>
       )}
 
+      {/* Registration Banner */}
+      {!user && (
+        <div className="bg-indigo-600 text-white rounded-2xl p-4 sm:p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-full hidden sm:block">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bell-ring"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/><path d="M22 8c0-2.3-.8-4.3-2-6"/></svg>
+            </div>
+            <div>
+              <p className="font-medium text-lg">{t('home.register_banner')}</p>
+            </div>
+          </div>
+          <button 
+            onClick={signInWithGoogle}
+            className="whitespace-nowrap bg-white text-indigo-600 hover:bg-indigo-50 px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+          >
+            {t('home.register_button')}
+          </button>
+        </div>
+      )}
+
       {/* Search Hero Section */}
       <section className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
         <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-gray-900">
