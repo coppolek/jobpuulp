@@ -61,24 +61,24 @@ export function AdSenseBanner({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-amber-100 pb-2 mb-3">
           <div className="flex items-center gap-2">
             <span className="flex h-5 w-5 items-center justify-center rounded bg-amber-500 text-[10px] font-bold text-white uppercase">Ad</span>
-            <span className="text-xs font-semibold text-amber-800 tracking-wide uppercase font-mono">Google AdSense Unit</span>
+            <span className="text-xs font-semibold text-amber-800 tracking-wide uppercase font-mono">Unità Google AdSense</span>
           </div>
           <div className="text-[10px] font-mono text-amber-600 bg-amber-100 px-2 py-0.5 rounded">
-            Format: {adFormat} &bull; Responsive: {fullWidthResponsive ? 'Yes' : 'No'}
+            Formato: {adFormat} &bull; Responsivo: {fullWidthResponsive ? 'Sì' : 'No'}
           </div>
         </div>
         
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-3">
           <div className="space-y-1">
-            <div className="text-xs font-medium text-gray-500">Publisher ID</div>
+            <div className="text-xs font-medium text-gray-500">ID Publisher</div>
             <div className="text-sm font-mono font-semibold text-gray-800">{adClient || 'ca-pub-XXXXXXXXXXXXXXXX'}</div>
           </div>
           <div className="space-y-1">
-            <div className="text-xs font-medium text-gray-500">Ad Slot ID</div>
+            <div className="text-xs font-medium text-gray-500">ID Slot Ad</div>
             <div className="text-sm font-mono font-semibold text-gray-800">{adSlot || 'XXXXXXXXXX'}</div>
           </div>
           <div className="text-xs text-amber-700 italic bg-white border border-amber-100 rounded-lg px-3 py-1.5 shadow-sm max-w-xs">
-            {isPreview ? 'Preview of live Google AdSense placeholder.' : 'AdSense active (placeholder displayed in Dev/Preview mode).'}
+            {isPreview ? 'Anteprima del segnaposto Google AdSense.' : 'AdSense attivo (segnaposto visualizzato in modalità Dev/Anteprima).'}
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@ export function AdSenseBanner({
 
   return (
     <div className="w-full overflow-hidden rounded-xl bg-white border border-gray-100 p-2 my-4 shadow-sm">
-      <div className="text-[9px] font-semibold text-gray-400 mb-1 tracking-wider uppercase text-right mr-2">Advertisement</div>
+      <div className="text-[9px] font-semibold text-gray-400 mb-1 tracking-wider uppercase text-right mr-2">Pubblicità</div>
       <ins
         ref={adRef}
         className="adsbygoogle"

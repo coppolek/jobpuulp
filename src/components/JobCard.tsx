@@ -60,7 +60,7 @@ export function JobCard({ job, isSaved, onSaveToggle, onShare, onViewDetails }: 
             onClick={() => onViewDetails(job)}
             className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
           >
-            {t('job.details')} &rarr;
+            {t('job.apply')} &rarr;
           </button>
         ) : (
           <a
@@ -69,7 +69,7 @@ export function JobCard({ job, isSaved, onSaveToggle, onShare, onViewDetails }: 
             rel="noopener noreferrer"
             className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
           >
-            {t('job.details')} &rarr;
+            {t('job.apply')} &rarr;
           </a>
         )}
       </div>

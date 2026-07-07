@@ -227,15 +227,15 @@ export function Dashboard() {
           <FileText className="h-4 w-4" /> {t('dashboard.cv')}
         </button>
         <button onClick={() => setActiveTab('analytics')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'analytics' ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 text-gray-600'}`}>
-          <BarChart2 className="h-4 w-4" /> Analytics
+          <BarChart2 className="h-4 w-4" /> {t('dashboard.analytics')}
         </button>
 
         <button onClick={() => setActiveTab('settings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'settings' ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 text-gray-600'}`}>
-          <Settings className="h-4 w-4" /> Settings
+          <Settings className="h-4 w-4" /> {t('dashboard.settings_tab')}
         </button>
         {user?.email === 'coppolek@gmail.com' && (
           <button onClick={() => setActiveTab('admin_banners')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'admin_banners' ? 'bg-indigo-600 text-white' : 'hover:bg-indigo-50 text-indigo-600'}`}>
-            <Image className="h-4 w-4" /> Banners (Admin)
+            <Image className="h-4 w-4" /> {t('dashboard.admin_banners')}
           </button>
         )}
       </aside>
@@ -264,7 +264,7 @@ export function Dashboard() {
                         onClick={() => setSelectedJob(job)}
                         className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors text-sm font-medium flex items-center gap-2"
                       >
-                        {t('job.details')} <ExternalLink className="h-4 w-4" />
+                        {t('job.apply')} <ExternalLink className="h-4 w-4" />
                       </button>
                       <button onClick={() => removeSavedJob(job.id)} className="p-2 bg-gray-50 hover:bg-red-50 text-gray-500 hover:text-red-600 rounded-lg transition-colors" title={t('dashboard.remove')}>
                         <Trash2 className="h-5 w-5" />
@@ -359,20 +359,20 @@ export function Dashboard() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900">
-              <BarChart2 className="h-5 w-5 text-blue-600" /> Real-time Analytics
+              <BarChart2 className="h-5 w-5 text-blue-600" /> {t('dashboard.analytics')}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 text-center">
                 <div className="text-4xl font-bold text-blue-600 mb-2">{savedJobs.length}</div>
-                <div className="text-sm text-gray-500 font-medium">Saved Jobs</div>
+                <div className="text-sm text-gray-500 font-medium">{t('dashboard.analytics.saved')}</div>
               </div>
               <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 text-center">
                 <div className="text-4xl font-bold text-emerald-600 mb-2">0</div>
-                <div className="text-sm text-gray-500 font-medium">Applications Sent</div>
+                <div className="text-sm text-gray-500 font-medium">{t('dashboard.analytics.applications')}</div>
               </div>
               <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 text-center">
                 <div className="text-4xl font-bold text-purple-600 mb-2">0</div>
-                <div className="text-sm text-gray-500 font-medium">Interviews</div>
+                <div className="text-sm text-gray-500 font-medium">{t('dashboard.analytics.interviews')}</div>
               </div>
             </div>
           </div>
@@ -383,7 +383,7 @@ export function Dashboard() {
         {activeTab === 'settings' && (
           <div className="space-y-6">
             <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900">
-              <Settings className="h-5 w-5 text-blue-600" /> Account Settings
+              <Settings className="h-5 w-5 text-blue-600" /> {t('dashboard.settings_tab')}
             </h2>
             <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 max-w-2xl">
               <div className="space-y-8">
@@ -399,12 +399,12 @@ export function Dashboard() {
                 {/* Security */}
                 <div>
                   <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-                    <Fingerprint className="h-5 w-5 text-purple-500" /> Security & Authentication
+                    <Fingerprint className="h-5 w-5 text-purple-500" /> {t('dashboard.settings.security')}
                   </h4>
                   <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <div>
-                      <div className="font-medium text-sm text-gray-900">Biometric Authentication</div>
-                      <div className="text-xs text-gray-500 mt-1">Use Touch ID or Face ID for login</div>
+                      <div className="font-medium text-sm text-gray-900">{t('dashboard.settings.biometric')}</div>
+                      <div className="text-xs text-gray-500 mt-1">{t('dashboard.settings.biometric_desc')}</div>
                     </div>
                     <button 
                       onClick={handleBiometricToggle}
@@ -418,16 +418,16 @@ export function Dashboard() {
                 {/* Notifications */}
                 <div>
                   <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-amber-500" /> Push Notifications
+                    <Bell className="h-5 w-5 text-amber-500" /> {t('dashboard.settings.notifications')}
                   </h4>
                   <div className="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" defaultChecked />
-                      <span className="text-sm text-gray-700">New job alerts matching saved searches</span>
+                      <span className="text-sm text-gray-700">{t('dashboard.settings.alerts_new')}</span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" defaultChecked />
-                      <span className="text-sm text-gray-700">Application status updates</span>
+                      <span className="text-sm text-gray-700">{t('dashboard.settings.alerts_status')}</span>
                     </label>
                   </div>
                 </div>
@@ -435,12 +435,12 @@ export function Dashboard() {
                 {/* Data & Backup */}
                 <div>
                   <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-                    <CloudUpload className="h-5 w-5 text-emerald-500" /> Cloud Backup
+                    <CloudUpload className="h-5 w-5 text-emerald-500" /> {t('dashboard.settings.data')}
                   </h4>
                   <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-500 mb-4">Your data is automatically synced to Firestore. You can also trigger a manual backup.</p>
+                    <p className="text-sm text-gray-500 mb-4">{t('admin.backup_desc')}</p>
                     <button onClick={handleBackup} className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                      Export Data to Cloud
+                      {t('admin.backup_btn')}
                     </button>
                   </div>
                 </div>
@@ -452,11 +452,11 @@ export function Dashboard() {
         {activeTab === 'admin_banners' && (
           <div className="space-y-6">
             <h2 className="text-xl font-bold flex items-center gap-2 text-indigo-900">
-              <Image className="h-5 w-5 text-indigo-600" /> Banner Management
+              <Image className="h-5 w-5 text-indigo-600" /> {t('admin.title')}
             </h2>
             
             <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 mb-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Banner / Ad Unit</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">{t('admin.add_new')}</h3>
               
               {/* Type Switcher */}
               <div className="flex bg-gray-100 p-1 rounded-lg max-w-md mb-6">
@@ -465,14 +465,14 @@ export function Dashboard() {
                   onClick={() => setNewBanner({ ...newBanner, type: 'image' })}
                   className={`flex-1 text-center py-2 text-sm font-medium rounded-md transition-colors ${newBanner.type === 'image' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
                 >
-                  Image Banner
+                  {t('admin.type.image')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setNewBanner({ ...newBanner, type: 'adsense' })}
                   className={`flex-1 text-center py-2 text-sm font-medium rounded-md transition-colors ${newBanner.type === 'adsense' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
                 >
-                  Google AdSense
+                  {t('admin.type.adsense')}
                 </button>
               </div>
 
@@ -480,7 +480,7 @@ export function Dashboard() {
                 {newBanner.type === 'image' ? (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.image_url')}</label>
                       <input 
                         type="text"
                         className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 placeholder:text-gray-400"
@@ -490,7 +490,7 @@ export function Dashboard() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Link URL (Optional)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.link_url')}</label>
                       <input 
                         type="text"
                         className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 placeholder:text-gray-400"
@@ -504,7 +504,7 @@ export function Dashboard() {
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">AdSense Publisher ID (Client)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.adsense_client')}</label>
                         <input 
                           type="text"
                           className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 placeholder:text-gray-400 font-mono"
@@ -514,7 +514,7 @@ export function Dashboard() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">AdSense Slot ID (Slot)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.adsense_slot')}</label>
                         <input 
                           type="text"
                           className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 placeholder:text-gray-400 font-mono"
@@ -527,13 +527,13 @@ export function Dashboard() {
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Ad Format</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.ad_format')}</label>
                         <select
                           className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700"
                           value={newBanner.adFormat || 'auto'}
                           onChange={(e) => setNewBanner({...newBanner, adFormat: e.target.value})}
                         >
-                          <option value="auto">Auto (Recommended)</option>
+                          <option value="auto">Auto</option>
                           <option value="rectangle">Rectangle</option>
                           <option value="horizontal">Horizontal</option>
                           <option value="vertical">Vertical</option>
@@ -547,14 +547,14 @@ export function Dashboard() {
                             checked={!!newBanner.fullWidthResponsive}
                             onChange={(e) => setNewBanner({...newBanner, fullWidthResponsive: e.target.checked})}
                           />
-                          <span className="text-sm text-gray-700">Full Width Responsive</span>
+                          <span className="text-sm text-gray-700">{t('admin.full_width')}</span>
                         </label>
                       </div>
                     </div>
 
                     {/* Instant Mock Preview of the ad block */}
                     <div className="pt-2">
-                      <div className="text-xs font-semibold text-gray-500 mb-2">Configuration Preview</div>
+                      <div className="text-xs font-semibold text-gray-500 mb-2">{t('admin.preview')}</div>
                       <AdSenseBanner
                         adClient={newBanner.adClient}
                         adSlot={newBanner.adSlot}
@@ -574,7 +574,7 @@ export function Dashboard() {
                       checked={!!newBanner.isActive}
                       onChange={(e) => setNewBanner({...newBanner, isActive: e.target.checked})}
                     />
-                    <span className="text-sm text-gray-700">Active / Visible on site</span>
+                    <span className="text-sm text-gray-700">{t('admin.active')}</span>
                   </label>
                 </div>
 
@@ -583,15 +583,15 @@ export function Dashboard() {
                   disabled={isSavingBanner || (newBanner.type === 'image' ? !newBanner.imageUrl : (!newBanner.adClient || !newBanner.adSlot))}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
                 >
-                  {isSavingBanner ? 'Saving...' : 'Add Banner Unit'}
+                  {isSavingBanner ? t('admin.button.saving') : t('admin.button.add')}
                 </button>
               </div>
             </div>
 
             <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Existing Banners & Ad Units</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">{t('admin.existing')}</h3>
               {banners.length === 0 ? (
-                <p className="text-sm text-gray-500">No banners found.</p>
+                <p className="text-sm text-gray-500">{t('admin.no_banners')}</p>
               ) : (
                 <div className="space-y-4">
                   {banners.map((banner) => (
@@ -625,7 +625,7 @@ export function Dashboard() {
                             checked={banner.isActive}
                             onChange={() => handleToggleBanner(banner.id, banner.isActive)}
                           />
-                          <span className="text-sm text-gray-700">Active</span>
+                          <span className="text-sm text-gray-700">{t('dashboard.settings.active')}</span>
                         </label>
                         <button 
                           onClick={() => handleDeleteBanner(banner.id)}

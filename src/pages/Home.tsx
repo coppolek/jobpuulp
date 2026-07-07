@@ -10,7 +10,7 @@ import { JobModal } from '../components/JobModal';
 import { AdSenseBanner } from '../components/AdSenseBanner';
 
 export function Home() {
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const { t } = useLanguage();
   
   // Search state
@@ -329,7 +329,7 @@ export function Home() {
               <span className="text-red-600 font-bold">!</span>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-red-800 mb-1">Search Error</h3>
+              <h3 className="text-sm font-semibold text-red-800 mb-1">{t('error.search_title')}</h3>
               <p className="text-sm text-red-600">{errorMsg}</p>
             </div>
           </div>
@@ -371,7 +371,18 @@ export function Home() {
               isSaved={savedJobs.has(job.url)}
               onSaveToggle={handleSaveJob}
               onShare={handleShare}
-              onViewDetails={(job) => setSelectedJob(job)}
+              onViewDetails={async (job) => {
+                if (!user) {
+                  alert(t('error.apply_signin'));
+                  try {
+                    await signInWithGoogle();
+                  } catch (e) {
+                    console.error(e);
+                  }
+                  return;
+                }
+                setSelectedJob(job);
+              }}
             />
           ))}
         </div>
