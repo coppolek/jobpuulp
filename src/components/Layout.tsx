@@ -54,12 +54,14 @@ export function Layout() {
                 </div>
               </>
             ) : (
-              <button
-                onClick={signInWithGoogle}
-                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-gray-200 shadow-sm"
-              >
-                <User className="h-4 w-4" /> {t('nav.signin')}
-              </button>
+              <div className="flex flex-col items-end">
+                <button
+                  onClick={signInWithGoogle}
+                  className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-gray-200 shadow-sm"
+                >
+                  <User className="h-4 w-4" /> {t('nav.signin')}
+                </button>
+              </div>
             )}
           </nav>
         </div>

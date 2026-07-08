@@ -44,7 +44,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.warn('Sign-in popup request was cancelled.');
         return;
       }
+      if (error && (error.code === 'auth/popup-blocked' || error.message?.includes('popup'))) {
+        alert('Il popup di accesso è stato bloccato. Per favore, apri l\'app in una nuova scheda cliccando l\'icona in alto a destra, o consenti i popup per questo sito.');
+        return;
+      }
+      if (error && error.code === 'auth/unauthorized-domain') {
+        alert('Il dominio non è autorizzato per la registrazione con Google. Prova ad aprire l\'app in una nuova scheda o contatta l\'amministratore.');
+        return;
+      }
       console.error('Authentication error:', error);
+      alert('Errore durante l\'accesso: ' + error.message + '. Se sei in anteprima, prova ad aprire in una nuova finestra.');
     }
   };
 
