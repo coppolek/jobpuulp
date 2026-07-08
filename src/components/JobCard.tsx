@@ -16,7 +16,12 @@ export function JobCard({ job, isSaved, onSaveToggle, onShare, onViewDetails }: 
   const { t } = useLanguage();
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 transition-colors flex flex-col h-full shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 transition-colors flex flex-col h-full shadow-sm relative">
+      {job.isLocal && (
+        <span className="absolute -top-3 left-4 bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded border border-indigo-200">
+          {job.type === 'job' ? 'Offerta Diretta' : 'Candidato'}
+        </span>
+      )}
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">{job.title}</h3>

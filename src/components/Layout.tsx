@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Briefcase, User, LogOut, LayoutDashboard, Search, Globe } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -15,6 +16,10 @@ export function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">
+      <Helmet>
+        <title>puulp.it - Trova il tuo prossimo lavoro</title>
+        <meta name="description" content="Cerca tra migliaia di offerte di lavoro su puulp.it. Trova lavoro, pubblica annunci o proponiti come candidato." />
+      </Helmet>
       <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur">
         <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-gray-900">
@@ -33,6 +38,9 @@ export function Layout() {
             </button>
             <Link to="/" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors hidden sm:flex items-center gap-2">
               <Search className="h-4 w-4" /> {t('nav.home')}
+            </Link>
+            <Link to="/post-job" className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors shadow-sm flex items-center gap-1.5 sm:gap-2">
+              <Briefcase className="h-4 w-4" /> <span className="hidden sm:inline">{t('nav.signin') === 'Accedi' ? 'Pubblica Annuncio' : 'Post Job'}</span><span className="sm:hidden">{t('nav.signin') === 'Accedi' ? 'Pubblica' : 'Post'}</span>
             </Link>
             {user ? (
               <>

@@ -6,19 +6,7 @@ service cloud.firestore {
     }
 
     match /savedJobs/{savedJobId} {
-      function isValidSavedJob(data) {
-        return data.userId == request.auth.uid &&
-               data.jobId is string &&
-               data.title is string &&
-               data.company is string &&
-               data.locations is string &&
-               data.url is string &&
-               data.site is string &&
-               data.description is string &&
-               data.savedAt is string;
-      }
-
-      allow create: if isSignedIn() && isValidSavedJob(request.resource.data);
+      allow create: if isSignedIn();
       allow update: if false;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
@@ -32,6 +20,25 @@ service cloud.firestore {
     match /banners/{bannerId} {
       allow read: if true;
       allow write: if isSignedIn() && 'email' in request.auth.token && request.auth.token.email == 'coppolek@gmail.com';
+    }
+
+    match /local_jobs/{jobId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid || 
+                    (isSignedIn() && 'email' in request.auth.token && request.auth.token.email == 'coppolek@gmail.com');
+    }
+
+    match /local_job_messages/{messageId} {
+      allow read: if request.auth != null && resource.data.receiverId == request.auth.uid;
+      allow create: if true;
+      allow update: if false;
+      allow delete: if request.auth != null && resource.data.receiverId == request.auth.uid;
+    }
+    
+    match /local_job_ratings/{ratingId} {
+      allow read, write: if true;
     }
   }
 }

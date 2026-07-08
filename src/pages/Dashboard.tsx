@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, query, where, getDocs, deleteDoc, doc, addDoc } from 'firebase/firestore';
-import { Bookmark, Send, Bell, Settings, Trash2, ExternalLink, Fingerprint, BarChart2, CloudUpload, FileText, Image } from 'lucide-react';
+import { Bookmark, Send, Bell, Settings, Trash2, ExternalLink, Fingerprint, BarChart2, CloudUpload, FileText, Image, Mail } from 'lucide-react';
 import { JobModal } from '../components/JobModal';
 import { AdSenseBanner } from '../components/AdSenseBanner';
 
@@ -11,9 +11,11 @@ export function Dashboard() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [savedJobs, setSavedJobs] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'saved' | 'applications' | 'analytics' | 'cv' | 'settings' | 'admin_banners'>('saved');
+  const [activeTab, setActiveTab] = useState<'saved' | 'applications' | 'analytics' | 'cv' | 'settings' | 'messages' | 'admin_banners'>('saved');
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
+
+  const [messages, setMessages] = useState<any[]>([]);
 
   // CV State
   const [cvData, setCvData] = useState({ summary: '', experience: '', education: '', skills: '' });
@@ -40,11 +42,25 @@ export function Dashboard() {
     if (user) {
       loadSavedJobs();
       loadCv();
+      loadMessages();
       if (user.email === 'coppolek@gmail.com') {
         loadBanners();
       }
     }
   }, [user]);
+
+  const loadMessages = async () => {
+    if (!user) return;
+    try {
+      const q = query(collection(db, 'local_job_messages'), where('receiverId', '==', user.uid));
+      const querySnapshot = await getDocs(q);
+      const msgs: any[] = [];
+      querySnapshot.forEach((doc) => msgs.push({ id: doc.id, ...doc.data() }));
+      setMessages(msgs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    } catch (error) {
+      console.error('Error loading messages', error);
+    }
+  };
 
   const loadBanners = async () => {
     try {
@@ -188,6 +204,15 @@ export function Dashboard() {
     }
   };
 
+  const removeMessage = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'local_job_messages', id));
+      setMessages(messages.filter(msg => msg.id !== id));
+    } catch (error) {
+      console.error('Error deleting message', error);
+    }
+  };
+
   const handleBackup = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedJobs));
     const downloadAnchorNode = document.createElement('a');
@@ -233,6 +258,12 @@ export function Dashboard() {
         </button>
         <button onClick={() => setActiveTab('cv')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'cv' ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 text-gray-600'}`}>
           <FileText className="h-4 w-4" /> {t('dashboard.cv')}
+        </button>
+        <button onClick={() => setActiveTab('messages')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'messages' ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 text-gray-600'}`}>
+          <Mail className="h-4 w-4" /> Messaggi
+          {messages.length > 0 && (
+            <span className="ml-auto bg-blue-100 text-blue-600 py-0.5 px-2 rounded-full text-xs font-bold">{messages.length}</span>
+          )}
         </button>
         <button onClick={() => setActiveTab('analytics')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'analytics' ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 text-gray-600'}`}>
           <BarChart2 className="h-4 w-4" /> {t('dashboard.analytics')}
@@ -293,6 +324,48 @@ export function Dashboard() {
             <div className="text-gray-500 py-10 bg-gray-50 rounded-xl border border-gray-200 text-center">
               Application tracking coming soon.
             </div>
+          </div>
+        )}
+
+        {activeTab === 'messages' && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900">
+              <Mail className="h-5 w-5 text-blue-600" /> Messaggi Ricevuti
+            </h2>
+            {messages.length === 0 ? (
+              <div className="text-gray-500 py-10 bg-gray-50 rounded-xl border border-gray-200 text-center">
+                Non hai ancora ricevuto messaggi per i tuoi annunci.
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {messages.map(msg => (
+                  <div key={msg.id} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{msg.jobTitle}</h3>
+                        <p className="text-sm text-gray-500">Da: <a href={`mailto:${msg.senderEmail}`} className="text-blue-600 hover:underline">{msg.senderEmail}</a></p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs text-gray-400">
+                          {new Date(msg.createdAt).toLocaleDateString()} {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                        <button onClick={() => removeMessage(msg.id)} className="p-1.5 bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-lg transition-colors" title="Elimina messaggio">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                      <p className="text-gray-700 whitespace-pre-wrap text-sm">{msg.message}</p>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                      <a href={`mailto:${msg.senderEmail}?subject=Re: In merito all'annuncio "${msg.jobTitle}"`} className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1">
+                        Rispondi via Email &rarr;
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

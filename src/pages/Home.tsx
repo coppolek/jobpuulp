@@ -5,6 +5,7 @@ import { Search, MapPin, Filter, Map, Briefcase, Clock, ChevronLeft, ChevronRigh
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, deleteDoc, doc, query, where, getDocs } from 'firebase/firestore';
 import { searchJobsAPI } from '../services/careerjet';
+import { getLocalJobs } from '../lib/localJobs';
 import { JobCard } from '../components/JobCard';
 import { JobModal } from '../components/JobModal';
 import { BannerRenderer } from '../components/BannerRenderer';
@@ -81,37 +82,41 @@ export function Home() {
     setWarningMsg(null);
     
     try {
-      const response = await searchJobsAPI({ 
-        keywords, 
-        location: locOverride || location, 
-        radius, 
-        sort, 
-        page: pageToFetch,
-        contract_type: contractType || undefined,
-        work_hours: workHours || undefined
-      });
+      const activeLoc = locOverride || location;
+      const [response, localJobs] = await Promise.all([
+        searchJobsAPI({ 
+          keywords, 
+          location: activeLoc, 
+          radius, 
+          sort, 
+          page: pageToFetch,
+          contract_type: contractType || undefined,
+          work_hours: workHours || undefined
+        }),
+        pageToFetch === 1 ? getLocalJobs(keywords, activeLoc) : Promise.resolve([])
+      ]);
       
       if (response.error) {
         setErrorMsg(response.error || t('error.search'));
-        setJobs([]);
-        setTotalHits(0);
-        setTotalPages(0);
+        setJobs(localJobs);
+        setTotalHits(localJobs.length);
+        setTotalPages(localJobs.length > 0 ? 1 : 0);
       } else if (response.type === 'LOCATIONS') {
         setLocationsSuggestion(response.locations || []);
-        setJobs([]);
-        setTotalHits(0);
-        setTotalPages(0);
+        setJobs(localJobs);
+        setTotalHits(localJobs.length);
+        setTotalPages(localJobs.length > 0 ? 1 : 0);
       } else if (response.type === 'JOBS') {
-        setJobs(response.jobs || []);
-        setTotalHits(response.hits || 0);
-        setTotalPages(response.pages || 0);
+        setJobs([...localJobs, ...(response.jobs || [])]);
+        setTotalHits((response.hits || 0) + localJobs.length);
+        setTotalPages(response.pages || (localJobs.length > 0 ? 1 : 0));
         setCurrentPage(pageToFetch);
         if (response.warning) setWarningMsg(response.warning);
         if (locOverride) setLocation(locOverride);
       } else {
-        setJobs([]);
-        setTotalHits(0);
-        setTotalPages(0);
+        setJobs(localJobs);
+        setTotalHits(localJobs.length);
+        setTotalPages(localJobs.length > 0 ? 1 : 0);
       }
     } catch (error: any) {
       console.error('Error fetching jobs:', error);
