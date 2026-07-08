@@ -23,13 +23,15 @@ export function Dashboard() {
   // Banner State
   const [banners, setBanners] = useState<any[]>([]);
   const [newBanner, setNewBanner] = useState<any>({
-    type: 'image', // 'image' | 'adsense'
+    type: 'image', // 'image' | 'adsense' | 'html'
+    position: 'before_search', // 'before_search' | 'after_search' | 'job_popup'
     imageUrl: '',
     linkUrl: '',
     adClient: '',
     adSlot: '',
     adFormat: 'auto',
     fullWidthResponsive: true,
+    htmlCode: '',
     isActive: true
   });
   const [isSavingBanner, setIsSavingBanner] = useState(false);
@@ -58,12 +60,14 @@ export function Dashboard() {
   const handleAddBanner = async () => {
     const isImageValid = newBanner.type === 'image' && newBanner.imageUrl;
     const isAdSenseValid = newBanner.type === 'adsense' && newBanner.adClient && newBanner.adSlot;
-    if (!isImageValid && !isAdSenseValid) return;
+    const isHtmlValid = newBanner.type === 'html' && newBanner.htmlCode;
+    if (!isImageValid && !isAdSenseValid && !isHtmlValid) return;
 
     setIsSavingBanner(true);
     try {
       const bannerPayload: any = {
         type: newBanner.type || 'image',
+        position: newBanner.position || 'before_search',
         isActive: newBanner.isActive,
         createdAt: new Date().toISOString()
       };
@@ -71,22 +75,26 @@ export function Dashboard() {
       if (newBanner.type === 'image') {
         bannerPayload.imageUrl = newBanner.imageUrl;
         bannerPayload.linkUrl = newBanner.linkUrl || '';
-      } else {
+      } else if (newBanner.type === 'adsense') {
         bannerPayload.adClient = newBanner.adClient;
         bannerPayload.adSlot = newBanner.adSlot;
         bannerPayload.adFormat = newBanner.adFormat || 'auto';
         bannerPayload.fullWidthResponsive = !!newBanner.fullWidthResponsive;
+      } else if (newBanner.type === 'html') {
+        bannerPayload.htmlCode = newBanner.htmlCode;
       }
 
       await addDoc(collection(db, 'banners'), bannerPayload);
       setNewBanner({
         type: 'image',
+        position: 'before_search',
         imageUrl: '',
         linkUrl: '',
         adClient: '',
         adSlot: '',
         adFormat: 'auto',
         fullWidthResponsive: true,
+        htmlCode: '',
         isActive: true
       });
       loadBanners();
@@ -458,22 +466,43 @@ export function Dashboard() {
             <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 mb-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">{t('admin.add_new')}</h3>
               
-              {/* Type Switcher */}
-              <div className="flex bg-gray-100 p-1 rounded-lg max-w-md mb-6">
-                <button
-                  type="button"
-                  onClick={() => setNewBanner({ ...newBanner, type: 'image' })}
-                  className={`flex-1 text-center py-2 text-sm font-medium rounded-md transition-colors ${newBanner.type === 'image' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
-                >
-                  {t('admin.type.image')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setNewBanner({ ...newBanner, type: 'adsense' })}
-                  className={`flex-1 text-center py-2 text-sm font-medium rounded-md transition-colors ${newBanner.type === 'adsense' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
-                >
-                  {t('admin.type.adsense')}
-                </button>
+              {/* Type and Position Switcher */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <div className="flex bg-gray-100 p-1 rounded-lg flex-1">
+                  <button
+                    type="button"
+                    onClick={() => setNewBanner({ ...newBanner, type: 'image' })}
+                    className={`flex-1 text-center py-2 text-sm font-medium rounded-md transition-colors ${newBanner.type === 'image' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                  >
+                    {t('admin.type.image')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewBanner({ ...newBanner, type: 'adsense' })}
+                    className={`flex-1 text-center py-2 text-sm font-medium rounded-md transition-colors ${newBanner.type === 'adsense' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                  >
+                    {t('admin.type.adsense')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewBanner({ ...newBanner, type: 'html' })}
+                    className={`flex-1 text-center py-2 text-sm font-medium rounded-md transition-colors ${newBanner.type === 'html' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                  >
+                    Codice HTML
+                  </button>
+                </div>
+                
+                <div className="flex-1">
+                  <select
+                    className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700"
+                    value={newBanner.position || 'before_search'}
+                    onChange={(e) => setNewBanner({...newBanner, position: e.target.value})}
+                  >
+                    <option value="before_search">Prima della ricerca (Home)</option>
+                    <option value="after_search">Dopo la ricerca (Home)</option>
+                    <option value="job_popup">Popup Annuncio</option>
+                  </select>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -500,7 +529,7 @@ export function Dashboard() {
                       />
                     </div>
                   </>
-                ) : (
+                ) : newBanner.type === 'adsense' ? (
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
@@ -564,7 +593,18 @@ export function Dashboard() {
                       />
                     </div>
                   </>
-                )}
+                ) : newBanner.type === 'html' ? (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Codice HTML / Script</label>
+                    <textarea 
+                      className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 placeholder:text-gray-400 font-mono"
+                      rows={6}
+                      placeholder="<script>...</script> o <div>...</div>"
+                      value={newBanner.htmlCode || ''}
+                      onChange={(e) => setNewBanner({...newBanner, htmlCode: e.target.value})}
+                    />
+                  </div>
+                ) : null}
 
                 <div className="flex items-center gap-3 pt-2">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -580,7 +620,7 @@ export function Dashboard() {
 
                 <button 
                   onClick={handleAddBanner}
-                  disabled={isSavingBanner || (newBanner.type === 'image' ? !newBanner.imageUrl : (!newBanner.adClient || !newBanner.adSlot))}
+                  disabled={isSavingBanner || (newBanner.type === 'image' ? !newBanner.imageUrl : (newBanner.type === 'adsense' ? (!newBanner.adClient || !newBanner.adSlot) : !newBanner.htmlCode))}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
                 >
                   {isSavingBanner ? t('admin.button.saving') : t('admin.button.add')}
@@ -597,6 +637,9 @@ export function Dashboard() {
                   {banners.map((banner) => (
                     <div key={banner.id} className="border border-gray-200 rounded-lg p-4 flex flex-col md:flex-row gap-4 justify-between items-center bg-gray-50">
                       <div className="flex-1 w-full">
+                        <div className="mb-2 inline-block px-2 py-0.5 bg-indigo-100 text-indigo-800 text-xs rounded-full">
+                          Posizione: {banner.position === 'job_popup' ? 'Popup Annuncio' : (banner.position === 'after_search' ? 'Dopo la ricerca' : 'Prima della ricerca')}
+                        </div>
                         {banner.type === 'adsense' ? (
                           <div className="bg-amber-50/50 border border-amber-200 rounded-lg p-3">
                             <div className="flex items-center gap-2 mb-2">
@@ -607,6 +650,10 @@ export function Dashboard() {
                               <div><span className="font-semibold text-gray-500">Client:</span> {banner.adClient}</div>
                               <div><span className="font-semibold text-gray-500">Slot:</span> {banner.adSlot}</div>
                             </div>
+                          </div>
+                        ) : banner.type === 'html' ? (
+                          <div className="bg-gray-800 text-gray-200 rounded-lg p-3 text-xs font-mono overflow-x-auto">
+                            {banner.htmlCode?.substring(0, 100)}{banner.htmlCode?.length > 100 ? '...' : ''}
                           </div>
                         ) : (
                           <div className="flex gap-4 items-center">

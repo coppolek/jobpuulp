@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ExternalLink, Briefcase, MapPin, DollarSign, Calendar, Building2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { db } from '../lib/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { BannerRenderer } from './BannerRenderer';
 
 interface JobModalProps {
   job: any;
@@ -9,6 +12,21 @@ interface JobModalProps {
 
 export function JobModal({ job, onClose }: JobModalProps) {
   const { t } = useLanguage();
+  const [banners, setBanners] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadBanners = async () => {
+      try {
+        const q = query(collection(db, 'banners'), where('isActive', '==', true), where('position', '==', 'job_popup'));
+        const querySnapshot = await getDocs(q);
+        const bannersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setBanners(bannersData);
+      } catch (error) {
+        console.error('Error fetching banners', error);
+      }
+    };
+    loadBanners();
+  }, []);
 
   if (!job) return null;
 
@@ -42,6 +60,12 @@ export function JobModal({ job, onClose }: JobModalProps) {
         </div>
         
         <div className="flex-1 w-full bg-white relative overflow-y-auto p-6">
+          {banners.length > 0 && (
+            <div className="mb-6">
+              <BannerRenderer banners={banners} position="job_popup" />
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-4 mb-8">
             <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
               <MapPin className="h-5 w-5 text-gray-400" />

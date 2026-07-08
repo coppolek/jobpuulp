@@ -7,7 +7,7 @@ import { collection, addDoc, deleteDoc, doc, query, where, getDocs } from 'fireb
 import { searchJobsAPI } from '../services/careerjet';
 import { JobCard } from '../components/JobCard';
 import { JobModal } from '../components/JobModal';
-import { AdSenseBanner } from '../components/AdSenseBanner';
+import { BannerRenderer } from '../components/BannerRenderer';
 
 export function Home() {
   const { user, signInWithGoogle } = useAuth();
@@ -197,33 +197,8 @@ export function Home() {
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
-      {/* Banners Section */}
-      {banners.length > 0 && (
-        <div className="grid grid-cols-1 gap-4">
-          {banners.map((banner) => (
-            <div key={banner.id} className="w-full">
-              {banner.type === 'adsense' ? (
-                <AdSenseBanner 
-                  adClient={banner.adClient}
-                  adSlot={banner.adSlot}
-                  adFormat={banner.adFormat || 'auto'}
-                  fullWidthResponsive={banner.fullWidthResponsive !== false}
-                />
-              ) : (
-                <div className="w-full overflow-hidden rounded-2xl shadow-sm border border-gray-200 bg-white">
-                  {banner.linkUrl ? (
-                    <a href={banner.linkUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
-                      <img src={banner.imageUrl} alt="Advertisement" className="w-full h-auto max-h-48 object-cover" />
-                    </a>
-                  ) : (
-                    <img src={banner.imageUrl} alt="Advertisement" className="w-full h-auto max-h-48 object-cover" />
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Before Search Banners */}
+      <BannerRenderer banners={banners} position="before_search" />
 
       {/* Registration Banner */}
       {!user && (
@@ -452,6 +427,13 @@ export function Home() {
             >
               <ChevronRight className="h-5 w-5" />
             </button>
+          </div>
+        )}
+
+        {/* After Search Banners */}
+        {!loading && jobs.length > 0 && (
+          <div className="mt-8">
+            <BannerRenderer banners={banners} position="after_search" />
           </div>
         )}
       </section>
