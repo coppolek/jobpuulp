@@ -15,9 +15,19 @@ export const searchJobsAPI = async (params: JobSearchParams) => {
     body: JSON.stringify(params),
   });
   
-  if (!response.ok) {
+  let data;
+  try {
+    data = await response.json();
+  } catch (e) {
+    if (!response.ok) {
+      throw new Error('Failed to fetch jobs');
+    }
+    throw e;
+  }
+  
+  if (!response.ok && !data.error) {
     throw new Error('Failed to fetch jobs');
   }
   
-  return await response.json();
+  return data;
 };

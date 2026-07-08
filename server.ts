@@ -54,16 +54,65 @@ async function startServer() {
       const data = await response.json();
       
       if (!response.ok || data.type === 'ERROR') {
-        console.error("CareerJet API Error Response:", data);
-        
-        let errorMessage = data.error || "Failed to fetch jobs from Careerjet API";
+        let errorMessage = data?.error || "Failed to fetch jobs from Careerjet API";
         
         // Handle specific CareerJet IP whitelist error
         if (errorMessage.includes("Unauthorized access from IP")) {
-          errorMessage = `CareerJet API Error: ${errorMessage}. You need to whitelist this server IP in your CareerJet account dashboard or contact their support to allow dynamic IPs.`;
+          console.log(`CareerJet IP blocked: ${errorMessage}. Falling back to Remotive API.`);
+          try {
+            const remotiveResponse = await fetch(`https://remotive.com/api/remote-jobs?search=${encodeURIComponent(keywords || '')}`);
+            const remotiveData = await remotiveResponse.json();
+            
+            if (remotiveData && remotiveData.jobs) {
+              let formattedJobs = remotiveData.jobs.map((job: any) => ({
+                url: job.url,
+                title: job.title,
+                company: job.company_name,
+                locations: job.candidate_required_location || 'Remote',
+                date: job.publication_date,
+                description: job.description ? job.description.replace(/<[^>]*>?/gm, '').substring(0, 300) + '...' : '',
+                salary: job.salary || '',
+                site: 'Remotive'
+              }));
+              
+              let appliedLocationFilter = false;
+              if (location) {
+                const locLower = location.toLowerCase();
+                const filteredJobs = formattedJobs.filter((job: any) => 
+                  job.locations.toLowerCase().includes(locLower) ||
+                  job.description.toLowerCase().includes(locLower) ||
+                  job.title.toLowerCase().includes(locLower)
+                );
+                
+                // Only apply filter if we actually found something, otherwise show all remote jobs for this keyword
+                if (filteredJobs.length > 0) {
+                  formattedJobs = filteredJobs;
+                  appliedLocationFilter = true;
+                }
+              }
+              
+              const requestedPage = parseInt(page || '1');
+              const pageSize = 20;
+              const paginatedJobs = formattedJobs.slice((requestedPage - 1) * pageSize, requestedPage * pageSize);
+              
+              return res.json({
+                type: "JOBS",
+                jobs: paginatedJobs,
+                hits: formattedJobs.length,
+                pages: Math.ceil(formattedJobs.length / pageSize),
+                warning: `CareerJet API ha bloccato l'IP del server. Sto mostrando offerte di lavoro da Remotive (Remote)${location && !appliedLocationFilter ? ` invece di '${location}' perché non ci sono risultati esatti per questa città.` : '.'}`
+              });
+            }
+          } catch (fallbackError) {
+            console.error("Fallback to Remotive failed:", fallbackError);
+          }
+          
+          errorMessage = `CareerJet API Error: ${errorMessage}. You need to whitelist this server IP in your CareerJet account dashboard.`;
+        } else {
+          console.error("CareerJet API Error Response:", data);
         }
 
-        return res.status(response.status !== 200 ? response.status : 400).json({ 
+        return res.status(response.status !== 200 && response.status ? response.status : 400).json({ 
           error: errorMessage,
           details: data
         });

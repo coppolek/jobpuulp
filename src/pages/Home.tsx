@@ -34,6 +34,7 @@ export function Home() {
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [warningMsg, setWarningMsg] = useState<string | null>(null);
   const [banners, setBanners] = useState<any[]>([]);
 
   useEffect(() => {
@@ -77,6 +78,7 @@ export function Home() {
     setLoading(true);
     setLocationsSuggestion([]);
     setErrorMsg(null);
+    setWarningMsg(null);
     
     try {
       const response = await searchJobsAPI({ 
@@ -90,7 +92,7 @@ export function Home() {
       });
       
       if (response.error) {
-        setErrorMsg(t('error.search'));
+        setErrorMsg(response.error || t('error.search'));
         setJobs([]);
         setTotalHits(0);
         setTotalPages(0);
@@ -104,6 +106,7 @@ export function Home() {
         setTotalHits(response.hits || 0);
         setTotalPages(response.pages || 0);
         setCurrentPage(pageToFetch);
+        if (response.warning) setWarningMsg(response.warning);
         if (locOverride) setLocation(locOverride);
       } else {
         setJobs([]);
@@ -351,6 +354,19 @@ export function Home() {
             <div>
               <h3 className="text-sm font-semibold text-red-800 mb-1">{t('error.search_title')}</h3>
               <p className="text-sm text-red-600">{errorMsg}</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Warning Message */}
+        {warningMsg && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 flex items-start gap-3 animate-in fade-in zoom-in-95">
+            <div className="bg-amber-100 p-2 rounded-lg">
+              <span className="text-amber-600 font-bold">!</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-amber-800 mb-1">Avviso</h3>
+              <p className="text-sm text-amber-700">{warningMsg}</p>
             </div>
           </div>
         )}
